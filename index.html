@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skyla – Spiral Reveal</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<style>
+body{
+  margin:0;
+  height:100vh;
+  background:#000;
+  overflow:hidden;
+  font-family:'Courier New', monospace;
+}
+canvas{
+  position:fixed;
+  inset:0;
+  z-index:1;
+}
+.intro-box{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:10;
+  text-align:center;
+  pointer-events:none;
+  opacity:0;
+}
+h1{
+  margin:0;
+  font-size:clamp(5rem,12vw,9rem);
+  letter-spacing:0.08em;
+}
+.subtitle{
+  margin-top:0.8rem;
+  font-size:clamp(1.4rem,4vw,2.2rem);
+  color:#00cc88;
+  opacity:0.9;
+  letter-spacing:0.15em;
+}
+.tap-note{
+  position:absolute;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  color:#00ffaa;
+  font-size:0.9rem;
+  opacity:0;
+  transition:opacity 1s;
+}
+</style>
+</head>
+<body>
+
+<div class="intro-box" id="intro">
+<h1>COMPUTER SCIENCE</h1>
+<div class="subtitle">smart ecosystem</div>
+</div>
+
+<div id="tapText" class="tap-note">Tap anywhere</div>
+
+<canvas id="c"></canvas>
+
+<script>
+const canvas=document.getElementById("c");
+const ctx=canvas.getContext("2d");
+const intro=document.getElementById("intro");
+const tapText=document.getElementById("tapText");
+
+let w=canvas.width=window.innerWidth;
+let h=canvas.height=window.innerHeight;
+
+window.addEventListener("resize",()=>{
+  w=canvas.width=window.innerWidth;
+  h=canvas.height=window.innerHeight;
+});
+
+const cx=w/2;
+const cy=h/2;
+
+/* ─── Title fall animation ─── */
+let titleY=-300;
+let titleVel=0;
+const gravity=0.65;
+const bounce=-0.68;
+const friction=0.88;
+
+let hasBounced=false;
+let spiralStart=false;
+let spiralFinished=false;
+
+/* ─── Node graph background during bounce ─── */
+let nodes = [];
+const nodeCount = 35;
+
+for(let i=0;i<nodeCount;i++){
+  nodes.push({
+    x: Math.random()*w,
+    y: Math.random()*h,
+    vx: (Math.random()-0.5)*1.2,
+    vy: (Math.random()-0.5)*1.2
+  });
+}
+
+function updateTitle(){
+  if(spiralStart) return;
+
+  titleVel += gravity;
+  titleY += titleVel;
+
+  const floor = h/2-80;
+  if(titleY >= floor){
+    titleY = floor;
+    titleVel *= bounce;
+
+    if(Math.abs(titleVel)<2.5){
+      titleVel = 0;
+      titleY = floor;
+      hasBounced = true;
+      setTimeout(()=>{ spiralStart=true; },400);
+    }else{
+      titleVel *= friction;
+    }
+  }
+
+  intro.style.top = titleY+"px";
+  intro.style.opacity = hasBounced?1:Math.min(1,(titleY+200)/400);
+}
+
+/* ─── Ripple system ─── */
+let ripples=[];
+
+class Ripple{
+  constructor(x,y){
+    this.x=x; this.y=y; this.r=0; this.alpha=0.9;
+  }
+  update(){
+    this.r+=2.4;
+    this.alpha-=0.008;
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+    ctx.strokeStyle=`rgba(0,255,170,${this.alpha})`;
+    ctx.lineWidth=2.8;
+    ctx.stroke();
+  }
+}
+
+/* ─── Spiral animation ─── */
+let angle=0;
+let radius=0;
+const maxRadius=Math.min(w,h)*0.48;
+
+/* ─── Draw node graph ─── */
+function drawNodes(){
+  // Move nodes
+  for(let i=0;i<nodes.length;i++){
+    let n = nodes[i];
+    n.x += n.vx;
+    n.y += n.vy;
+    if(n.x<0 || n.x>w) n.vx*=-1;
+    if(n.y<0 || n.y>h) n.vy*=-1;
+
+    // draw node
+    ctx.beginPath();
+    ctx.arc(n.x,n.y,2,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(0,255,150,0.7)';
+    ctx.fill();
+  }
+  // draw lines between close nodes
+  for(let i=0;i<nodes.length;i++){
+    for(let j=i+1;j<nodes.length;j++){
+      let dx = nodes[i].x - nodes[j].x;
+      let dy = nodes[i].y - nodes[j].y;
+      let dist = Math.sqrt(dx*dx+dy*dy);
+      if(dist<120){
+        ctx.beginPath();
+        ctx.moveTo(nodes[i].x,nodes[i].y);
+        ctx.lineTo(nodes[j].x,nodes[j].y);
+        ctx.strokeStyle='rgba(0,255,150,'+(1-dist/120)*0.3+')';
+        ctx.lineWidth=1;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+/* ─── Animate ─── */
+function animate(){
+  ctx.fillStyle="rgba(0,0,0,0.22)";
+  ctx.fillRect(0,0,w,h);
+
+  // Draw node graph during title bounce
+  
+    drawNodes();
+    updateTitle();
+
+
+  // Spiral ripple animation
+  if(spiralStart && radius<maxRadius){
+    const x=cx+radius*Math.cos(angle);
+    const y=cy+radius*Math.sin(angle);
+    ripples.push(new Ripple(x,y));
+    angle +=0.095;
+    radius +=0.38;
+  }
+
+  if(radius>=maxRadius && !spiralFinished){
+    spiralFinished=true;
+    tapText.style.opacity=1;
+  }
+
+  // Draw ripples
+  for(let i=ripples.length-1;i>=0;i--){
+    let r=ripples[i];
+    r.update();
+    r.draw();
+    if(r.alpha<=0.02) ripples.splice(i,1);
+  }
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+/* ─── Tap ripple interaction ─── */
+canvas.addEventListener("click",(e)=>{
+  if(!spiralFinished) return;
+  ripples.push(new Ripple(e.clientX,e.clientY));
+});
+canvas.addEventListener("touchstart",(e)=>{
+  if(!spiralFinished) return;
+  let t=e.touches[0];
+  ripples.push(new Ripple(t.clientX,t.clientY));
+});
+</script>
+</body>
+</html>
