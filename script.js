@@ -1,7 +1,7 @@
 /* --- Supabase Logic --- */
 const SUPABASE_URL = "https://syrngdhiefxvxkloxyjc.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Mt2LZbiyEUaezzJzhuHW2Q_98MmnxgU";
-const APK_URL = "https://github.com/Newton-oyweri/cshub/releases/download/v0.02/cshub.apk";
+const APK_URL = "https://github.com/Newton-oyweri/cshub/releases/download/v0.03/cshub.apk";
 
 async function loadDownloads(){
   try {
