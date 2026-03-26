@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+
 <style>
 body{
   margin:0;
@@ -17,6 +20,45 @@ canvas{
   inset:0;
   z-index:1;
 }
+
+/* --- Download Section --- */
+.download-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  text-align: right;
+}
+.download-btn {
+  background: #00ffaa;
+  color: #000;
+  padding: 10px 18px;
+  border-radius: 30px;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  box-shadow: 0 0 15px rgba(0,255,170,.4);
+  transition: 0.25s;
+  border: none;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(0,255,170,.7);
+  color: #000;
+}
+.download-count {
+  margin-top: 5px;
+  font-size: 0.8rem;
+  color: #00ffaa;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+}
+
+/* --- Intro Text --- */
 .intro-box{
   position:absolute;
   left:50%;
@@ -30,6 +72,7 @@ h1{
   margin:0;
   font-size:clamp(5rem,12vw,9rem);
   letter-spacing:0.08em;
+  color: white;
 }
 .subtitle{
   margin-top:0.8rem;
@@ -38,6 +81,8 @@ h1{
   opacity:0.9;
   letter-spacing:0.15em;
 }
+
+/* --- Tap Note --- */
 .tap-note{
   position:absolute;
   bottom:30px;
@@ -48,192 +93,85 @@ h1{
   opacity:0;
   transition:opacity 1s;
 }
+
+/* --- EFOOTBALL (clean + blended) --- */
+.efootball-box{
+  position:fixed;
+  bottom:80px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:20;
+  text-align:center;
+  opacity:0.75;
+  transition:0.3s;
+  text-decoration:none;
+    
+}
+
+.efootball-box img{
+  width:70px;
+  height:auto;
+  filter:grayscale(100%) brightness(0.8);
+  transition:0.3s;
+    border-radius: 50%;
+}
+
+.efootball-label{
+  margin-top:6px;
+  font-size:0.85rem;
+  color:#aaa;
+  letter-spacing:2px;
+  font-weight:bold;
+}
+
+/* subtle hover */
+.efootball-box:hover{
+  opacity:1;
+  transform:translateX(-50%) scale(1.05);
+}
+
+.efootball-box:hover img{
+  filter:grayscale(0%) brightness(1);
+}
+
+.efootball-box:hover .efootball-label{
+  color:#fff;
+}
+
 </style>
 </head>
+
 <body>
 
+<!-- Download -->
+<div class="download-container">
+  <a href="#" class="download-btn" onclick="trackDownload()">
+    <i class="bi bi-download"></i>
+    Update
+  </a>
+  <div id="downloads" class="download-count">
+    Loading...
+  </div>
+</div>
+
+<!-- Intro -->
 <div class="intro-box" id="intro">
-<h1>COMPUTER SCIENCE</h1>
-<div class="subtitle">smart ecosystem</div>
+  <h1>COMPUTER SCIENCE</h1>
+  <div class="subtitle">smart ecosystem</div>
 </div>
 
 <div id="tapText" class="tap-note">Tap anywhere</div>
 
+<!-- ✅ CLICKABLE EFOOTBALL -->
+<a href="https://efootballkenyaleague.website" target="_blank" class="efootball-box">
+  <img src="assets/images.png" alt="eFootball Logo">
+  <div class="efootball-label">eFootball</div>
+</a>
+
+<!-- Canvas -->
 <canvas id="c"></canvas>
 
-<script>
-const canvas=document.getElementById("c");
-const ctx=canvas.getContext("2d");
-const intro=document.getElementById("intro");
-const tapText=document.getElementById("tapText");
+<script src="script.js"></script>
 
-let w=canvas.width=window.innerWidth;
-let h=canvas.height=window.innerHeight;
-
-window.addEventListener("resize",()=>{
-  w=canvas.width=window.innerWidth;
-  h=canvas.height=window.innerHeight;
-});
-
-const cx=w/2;
-const cy=h/2;
-
-/* ─── Title fall animation ─── */
-let titleY=-300;
-let titleVel=0;
-const gravity=0.65;
-const bounce=-0.68;
-const friction=0.88;
-
-let hasBounced=false;
-let spiralStart=false;
-let spiralFinished=false;
-
-/* ─── Node graph background during bounce ─── */
-let nodes = [];
-const nodeCount = 35;
-
-for(let i=0;i<nodeCount;i++){
-  nodes.push({
-    x: Math.random()*w,
-    y: Math.random()*h,
-    vx: (Math.random()-0.5)*1.2,
-    vy: (Math.random()-0.5)*1.2
-  });
-}
-
-function updateTitle(){
-  if(spiralStart) return;
-
-  titleVel += gravity;
-  titleY += titleVel;
-
-  const floor = h/2-80;
-  if(titleY >= floor){
-    titleY = floor;
-    titleVel *= bounce;
-
-    if(Math.abs(titleVel)<2.5){
-      titleVel = 0;
-      titleY = floor;
-      hasBounced = true;
-      setTimeout(()=>{ spiralStart=true; },400);
-    }else{
-      titleVel *= friction;
-    }
-  }
-
-  intro.style.top = titleY+"px";
-  intro.style.opacity = hasBounced?1:Math.min(1,(titleY+200)/400);
-}
-
-/* ─── Ripple system ─── */
-let ripples=[];
-
-class Ripple{
-  constructor(x,y){
-    this.x=x; this.y=y; this.r=0; this.alpha=0.9;
-  }
-  update(){
-    this.r+=2.4;
-    this.alpha-=0.008;
-  }
-  draw(){
-    ctx.beginPath();
-    ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
-    ctx.strokeStyle=`rgba(0,255,170,${this.alpha})`;
-    ctx.lineWidth=2.8;
-    ctx.stroke();
-  }
-}
-
-/* ─── Spiral animation ─── */
-let angle=0;
-let radius=0;
-const maxRadius=Math.min(w,h)*0.48;
-
-/* ─── Draw node graph ─── */
-function drawNodes(){
-  // Move nodes
-  for(let i=0;i<nodes.length;i++){
-    let n = nodes[i];
-    n.x += n.vx;
-    n.y += n.vy;
-    if(n.x<0 || n.x>w) n.vx*=-1;
-    if(n.y<0 || n.y>h) n.vy*=-1;
-
-    // draw node
-    ctx.beginPath();
-    ctx.arc(n.x,n.y,2,0,Math.PI*2);
-    ctx.fillStyle = 'rgba(0,255,150,0.7)';
-    ctx.fill();
-  }
-  // draw lines between close nodes
-  for(let i=0;i<nodes.length;i++){
-    for(let j=i+1;j<nodes.length;j++){
-      let dx = nodes[i].x - nodes[j].x;
-      let dy = nodes[i].y - nodes[j].y;
-      let dist = Math.sqrt(dx*dx+dy*dy);
-      if(dist<120){
-        ctx.beginPath();
-        ctx.moveTo(nodes[i].x,nodes[i].y);
-        ctx.lineTo(nodes[j].x,nodes[j].y);
-        ctx.strokeStyle='rgba(0,255,150,'+(1-dist/120)*0.3+')';
-        ctx.lineWidth=1;
-        ctx.stroke();
-      }
-    }
-  }
-}
-
-/* ─── Animate ─── */
-function animate(){
-  ctx.fillStyle="rgba(0,0,0,0.22)";
-  ctx.fillRect(0,0,w,h);
-
-  // Draw node graph during title bounce
-  
-    drawNodes();
-    updateTitle();
-
-
-  // Spiral ripple animation
-  if(spiralStart && radius<maxRadius){
-    const x=cx+radius*Math.cos(angle);
-    const y=cy+radius*Math.sin(angle);
-    ripples.push(new Ripple(x,y));
-    angle +=0.095;
-    radius +=0.38;
-  }
-
-  if(radius>=maxRadius && !spiralFinished){
-    spiralFinished=true;
-    tapText.style.opacity=1;
-  }
-
-  // Draw ripples
-  for(let i=ripples.length-1;i>=0;i--){
-    let r=ripples[i];
-    r.update();
-    r.draw();
-    if(r.alpha<=0.02) ripples.splice(i,1);
-  }
-
-  requestAnimationFrame(animate);
-}
-
-animate();
-
-/* ─── Tap ripple interaction ─── */
-canvas.addEventListener("click",(e)=>{
-  if(!spiralFinished) return;
-  ripples.push(new Ripple(e.clientX,e.clientY));
-});
-canvas.addEventListener("touchstart",(e)=>{
-  if(!spiralFinished) return;
-  let t=e.touches[0];
-  ripples.push(new Ripple(t.clientX,t.clientY));
-});
-</script>
 </body>
 </html>
