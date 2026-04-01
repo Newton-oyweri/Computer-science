@@ -26,7 +26,7 @@ canvas{
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 100;
+  z-index: 200;
   text-align: right;
 }
 .download-btn {
@@ -58,31 +58,29 @@ canvas{
   letter-spacing: 1px;
 }
 
-/* --- Intro Text --- */
+/* Intro text */
 .intro-box{
   position:absolute;
   left:50%;
-  transform:translateX(-50%);
+  top:50%;
+  transform:translate(-50%, -50%);
   z-index:10;
   text-align:center;
   pointer-events:none;
-  opacity:0;
 }
 h1{
   margin:0;
   font-size:clamp(5rem,12vw,9rem);
-  letter-spacing:0.08em;
-  color: white;
+  color:white;
 }
 .subtitle{
   margin-top:0.8rem;
   font-size:clamp(1.4rem,4vw,2.2rem);
   color:#00cc88;
   opacity:0.9;
-  letter-spacing:0.15em;
 }
 
-/* --- Tap Note --- */
+/* Tap note */
 .tap-note{
   position:absolute;
   bottom:30px;
@@ -94,53 +92,105 @@ h1{
   transition:opacity 1s;
 }
 
-/* --- EFOOTBALL (clean + blended) --- */
-.efootball-box{
-  position:fixed;
-  bottom:80px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:20;
-  text-align:center;
-  opacity:0.75;
-  transition:0.3s;
-  text-decoration:none;
-    
+/* Top-left icons container */
+.top-left-icons{
+  position: fixed;
+  top:20px;
+  left:20px;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+  z-index:150;
 }
 
-.efootball-box img{
-  width:70px;
+/* Icon cards */
+.icon-card{
+  display:flex;
+  align-items:center;
+  background: rgba(0,255,170,0.1);
+  padding:8px 12px;
+  border-radius:12px;
+  cursor:pointer;
+  transition:0.3s;
+  transform: translateX(0);
+}
+.icon-card img{
+  width:50px;
   height:auto;
+  border-radius:50%;
+  margin-right:10px;
   filter:grayscale(100%) brightness(0.8);
   transition:0.3s;
-    border-radius: 50%;
+  animation: float 3s ease-in-out infinite alternate;
 }
-
-.efootball-label{
-  margin-top:6px;
-  font-size:0.85rem;
-  color:#aaa;
-  letter-spacing:2px;
-  font-weight:bold;
-}
-
-/* subtle hover */
-.efootball-box:hover{
-  opacity:1;
-  transform:translateX(-50%) scale(1.05);
-}
-
-.efootball-box:hover img{
+.icon-card:hover img{
   filter:grayscale(0%) brightness(1);
 }
-
-.efootball-box:hover .efootball-label{
+.icon-card span{
+  color:#00ffaa;
+  font-weight:bold;
+  font-size:0.9rem;
+  letter-spacing:1px;
+  animation: floatText 3s ease-in-out infinite alternate;
+}
+.icon-card:hover span{
   color:#fff;
 }
 
+/* Floating animations */
+@keyframes float{
+  0% {transform: translateY(0px);}
+  100% {transform: translateY(-6px);}
+}
+@keyframes floatText{
+  0% {transform: translateY(0px);}
+  100% {transform: translateY(-3px);}
+}
+
+/* Slide-in animations */
+@keyframes slideFromLeft {
+  0% { transform: translateX(-200px); opacity:0; }
+  100% { transform: translateX(0); opacity:1; }
+}
+@keyframes slideFromRight {
+  0% { transform: translateX(200px); opacity:0; }
+  100% { transform: translateX(0); opacity:1; }
+}
+
+/* P-AI Modal */
+#paiModal {
+  position: fixed;
+  top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.95);
+  color:#00ffaa;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+  padding: 20px;
+  text-align: center;
+  overflow-y:auto;
+}
+#paiModal h2{ color:#fff; margin-bottom:15px;}
+#paiModal p{ line-height:1.5; max-width:600px; margin:auto;}
+#paiModal button{
+  margin-top:20px;
+  padding:12px 25px;
+  font-size:1rem;
+  font-weight:bold;
+  background: orange;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  color:#000;
+  transition:0.25s;
+}
+#paiModal button:hover{
+  transform: scale(1.05);
+  background:#ffb84d;
+}
 </style>
 </head>
-
 <body>
 
 <!-- Download -->
@@ -149,9 +199,7 @@ h1{
     <i class="bi bi-download"></i>
     Update
   </a>
-  <div id="downloads" class="download-count">
-    Loading...
-  </div>
+  <div id="downloads" class="download-count">Loading...</div>
 </div>
 
 <!-- Intro -->
@@ -162,16 +210,69 @@ h1{
 
 <div id="tapText" class="tap-note">Tap anywhere</div>
 
-<!-- ✅ CLICKABLE EFOOTBALL -->
-<a href="https://efootballkenyaleague.website" target="_blank" class="efootball-box">
-  <img src="assets/images.png" alt="eFootball Logo">
-  <div class="efootball-label">eFootball</div>
-</a>
+<!-- Top-left icons -->
+<div class="top-left-icons">
+  <div class="icon-card" id="efbCard">
+    <img src="assets/images.png" alt="eFootball Logo">
+    <span>eFootball</span>
+  </div>
+
+  <div class="icon-card" id="paiCard">
+    <img src="assets/p-ai.png" alt="P-AI Logo">
+    <span>P-AI</span>
+  </div>
+</div>
+
+<!-- P-AI Modal -->
+<div id="paiModal">
+    <p>
+    P-AI is a modular, autonomous AI platform designed to learn, reason, and act in virtual environments, starting from simple game simulations and scaling up to complex decision-making systems.<br><br>
+    By joining this group, you agree to actively contribute to its development.
+  </p>
+  <button id="joinPaiBtn">Join WhatsApp Group</button>
+</div>
 
 <!-- Canvas -->
 <canvas id="c"></canvas>
 
 <script src="script.js"></script>
+<script>
+const efbCard = document.getElementById('efbCard');
+const paiCard = document.getElementById('paiCard');
+const paiModal = document.getElementById('paiModal');
+const joinBtn = document.getElementById('joinPaiBtn');
+
+// Slide animation sequence
+efbCard.style.opacity = 0;
+paiCard.style.opacity = 0;
+
+setTimeout(()=> {
+  efbCard.style.animation = 'slideFromLeft 0.8s forwards';
+}, 500);
+
+setTimeout(()=> {
+  paiCard.style.animation = 'slideFromRight 0.8s forwards';
+}, 1000);
+
+// eFootball click
+efbCard.addEventListener('click', ()=>window.open('https://efootballkenyaleague.website','_blank'));
+
+// P-AI modal
+paiCard.addEventListener('click', ()=>paiModal.style.display='flex');
+joinBtn.addEventListener('click', ()=> {
+  window.open("https://chat.whatsapp.com/Dbn9vdB4hzC8A7ccILXNd4?mode=gi_t","_blank");
+  paiModal.style.display='none';
+});
+paiModal.addEventListener('click', e=>{if(e.target===paiModal)paiModal.style.display='none';});
+
+// Mock download tracker (example)
+function trackDownload(){
+  const countEl = document.getElementById('downloads');
+  let current = parseInt(countEl.textContent) || 0;
+  current += 1;
+  countEl.textContent = current + " downloads";
+}
+</script>
 
 </body>
 </html>
