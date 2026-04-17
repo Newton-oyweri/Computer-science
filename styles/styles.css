@@ -1,10 +1,24 @@
-body{
-  margin:0;
-  height:100vh;
-  background:#000;
-  overflow:hidden;
-  font-family:'Courier New', monospace;
+body {
+  margin: 0;
+  min-height: 100vh; /* Changed from height: 100vh */
+  background: #000;
+  overflow-x: hidden;
+  overflow-y: auto; /* Enables vertical scrolling */
+  font-family: 'Courier New', monospace;
 }
+
+/* Custom scrollbar to match your neon theme */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #000;
+}
+::-webkit-scrollbar-thumb {
+  background: #00ffaa;
+  border-radius: 10px;
+}
+
 canvas{
   position:fixed;
   inset:0;

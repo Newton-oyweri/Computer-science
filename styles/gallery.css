@@ -1,0 +1,309 @@
+    /* Original cshub-logo styles replaced with enhanced gallery.
+       No other CSS outside this block has been modified. */
+    .cshub-logo {
+      position: absolute;
+      top: calc(50% + 140px);
+      left: 10%;
+      transform: translateX(-50%);
+      z-index: 10;
+      text-align: center;
+      animation: fadeInUp 1.2s ease forwards;
+      opacity: 0;
+      width: auto;
+      max-width: 85vw;
+      white-space: nowrap;
+    }
+
+    /* Gallery container: horizontal scroll with larger images and responsive sizing */
+    .cshub-gallery {
+      display: flex;
+      flex-direction: row;
+      gap: 28px;
+      overflow-x: auto;
+      padding: 16px 24px;
+      scrollbar-width: thin;
+      white-space: nowrap;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      border-radius: 48px;
+      box-shadow: 0 0 30px rgba(0, 255, 170, 0.4);
+      transition: 0.3s;
+      max-width: 75vw;
+      cursor: grab;
+      scroll-behavior: smooth;
+      border: 1px solid rgba(0, 255, 170, 0.3);
+    }
+
+    .cshub-gallery::-webkit-scrollbar {
+      height: 6px;
+    }
+    .cshub-gallery::-webkit-scrollbar-track {
+      background: #1a1a2e;
+      border-radius: 10px;
+    }
+    .cshub-gallery::-webkit-scrollbar-thumb {
+      background: #00ffaa;
+      border-radius: 10px;
+    }
+
+    /* Gallery items: larger default size, desktop optimized */
+    .gallery-item {
+      flex: 0 0 auto;
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      border-radius: 24px;
+      overflow: hidden;
+      background: rgba(10, 20, 15, 0.6);
+      padding: 8px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(2px);
+    }
+
+    .gallery-item img {
+      width: 180px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 20px;
+      display: block;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .gallery-item img:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 28px rgba(0, 255, 170, 0.8);
+    }
+
+    /* Desktop view: larger images, better spacing */
+    @media (min-width: 1200px) {
+      .cshub-logo {
+        left: 8%;
+        max-width: 80vw;
+      }
+      .cshub-gallery {
+        gap: 35px;
+        padding: 20px 32px;
+        max-width: 70vw;
+      }
+      .gallery-item img {
+        width: 220px;
+        height: 220px;
+        border-radius: 24px;
+      }
+      .gallery-item {
+        padding: 10px;
+      }
+    }
+
+    @media (min-width: 992px) and (max-width: 1199px) {
+      .cshub-gallery {
+        gap: 30px;
+        max-width: 75vw;
+      }
+      .gallery-item img {
+        width: 200px;
+        height: 200px;
+      }
+    }
+
+    @media (min-width: 768px) and (max-width: 991px) {
+      .cshub-logo {
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 90vw;
+      }
+      .cshub-gallery {
+        max-width: 85vw;
+        gap: 22px;
+        padding: 14px 20px;
+      }
+      .gallery-item img {
+        width: 150px;
+        height: 150px;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .cshub-logo {
+        left: 50%;
+        transform: translateX(-50%);
+        width: 92%;
+        max-width: 92vw;
+        top: calc(50% + 120px);
+      }
+      .cshub-gallery {
+        max-width: 88vw;
+        gap: 16px;
+        padding: 12px 18px;
+      }
+      .gallery-item img {
+        width: 120px;
+        height: 120px;
+      }
+      .gallery-item {
+        padding: 5px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .gallery-item img {
+        width: 100px;
+        height: 100px;
+      }
+      .cshub-gallery {
+        gap: 12px;
+      }
+    }
+
+    .gallery-title {
+      font-family: 'Segoe UI', 'Poppins', monospace;
+      font-weight: 700;
+      font-size: 1.6rem;
+      letter-spacing: 2.5px;
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, #00ffaa, #00ccff, #2a6eff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 12px rgba(0, 255, 170, 0.4);
+      display: inline-block;
+      backdrop-filter: blur(2px);
+    }
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 40px);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+
+    /* ========== MODAL STYLES - KILLER BABY WITH THEME MARGINS ========== */
+    .gallery-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(12px);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .gallery-modal.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-content {
+      position: relative;
+      max-width: 85vw;
+      max-height: 85vh;
+      margin: auto;
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(0, 255, 170, 0.6), 0 20px 40px rgba(0,0,0,0.5);
+      animation: modalPop 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      border: 2px solid rgba(0, 255, 170, 0.7);
+    }
+
+    @keyframes modalPop {
+      0% {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-content img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #0a0f1a;
+    }
+
+    /* Close button with killer style */
+    .modal-close {
+      position: absolute;
+      top: 24px;
+      right: 32px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      color: #00ffaa;
+      font-size: 2.5rem;
+      font-weight: bold;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.25s;
+      border: 1.5px solid rgba(0, 255, 170, 0.6);
+      font-family: monospace;
+      z-index: 10001;
+      box-shadow: 0 0 15px rgba(0,255,170,0.3);
+    }
+
+    .modal-close:hover {
+      background: #00ffaa20;
+      transform: scale(1.1);
+      color: #ffffff;
+      border-color: #00ffaa;
+      box-shadow: 0 0 25px #00ffaa;
+    }
+
+    /* Optional image caption / index */
+    .modal-caption {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: #00ffaa;
+      font-family: monospace;
+      font-size: 1rem;
+      background: rgba(0,0,0,0.6);
+      padding: 8px 16px;
+      width: fit-content;
+      margin: 0 auto;
+      border-radius: 40px;
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+      letter-spacing: 1px;
+    }
+
+    /* responsive modal margins */
+    @media (max-width: 768px) {
+      .modal-close {
+        top: 16px;
+        right: 20px;
+        width: 44px;
+        height: 44px;
+        font-size: 2rem;
+      }
+      .modal-content {
+        max-width: 92vw;
+        max-height: 80vh;
+        border-radius: 24px;
+      }
+      .modal-caption {
+        font-size: 0.8rem;
+        bottom: 12px;
+      }
+    }
+
+  

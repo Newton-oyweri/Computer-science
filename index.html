@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,324 +7,14 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
   <link href="./styles/styles.css" rel="stylesheet" />
-  <style>
-    /* Original cshub-logo styles replaced with enhanced gallery.
-       No other CSS outside this block has been modified. */
-    .cshub-logo {
-      position: absolute;
-      top: calc(50% + 140px);
-      left: 10%;
-      transform: translateX(-50%);
-      z-index: 10;
-      text-align: center;
-      animation: fadeInUp 1.2s ease forwards;
-      opacity: 0;
-      width: auto;
-      max-width: 85vw;
-      white-space: nowrap;
-    }
-
-    /* Gallery container: horizontal scroll with larger images and responsive sizing */
-    .cshub-gallery {
-      display: flex;
-      flex-direction: row;
-      gap: 28px;
-      overflow-x: auto;
-      padding: 16px 24px;
-      scrollbar-width: thin;
-      white-space: nowrap;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(8px);
-      border-radius: 48px;
-      box-shadow: 0 0 30px rgba(0, 255, 170, 0.4);
-      transition: 0.3s;
-      max-width: 75vw;
-      cursor: grab;
-      scroll-behavior: smooth;
-      border: 1px solid rgba(0, 255, 170, 0.3);
-    }
-
-    .cshub-gallery::-webkit-scrollbar {
-      height: 6px;
-    }
-    .cshub-gallery::-webkit-scrollbar-track {
-      background: #1a1a2e;
-      border-radius: 10px;
-    }
-    .cshub-gallery::-webkit-scrollbar-thumb {
-      background: #00ffaa;
-      border-radius: 10px;
-    }
-
-    /* Gallery items: larger default size, desktop optimized */
-    .gallery-item {
-      flex: 0 0 auto;
-      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-      border-radius: 24px;
-      overflow: hidden;
-      background: rgba(10, 20, 15, 0.6);
-      padding: 8px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(2px);
-    }
-
-    .gallery-item img {
-      width: 180px;
-      height: 180px;
-      object-fit: cover;
-      border-radius: 20px;
-      display: block;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      cursor: pointer;
-    }
-
-    .gallery-item img:hover {
-      transform: scale(1.08);
-      box-shadow: 0 0 28px rgba(0, 255, 170, 0.8);
-    }
-
-    /* Desktop view: larger images, better spacing */
-    @media (min-width: 1200px) {
-      .cshub-logo {
-        left: 8%;
-        max-width: 80vw;
-      }
-      .cshub-gallery {
-        gap: 35px;
-        padding: 20px 32px;
-        max-width: 70vw;
-      }
-      .gallery-item img {
-        width: 220px;
-        height: 220px;
-        border-radius: 24px;
-      }
-      .gallery-item {
-        padding: 10px;
-      }
-    }
-
-    @media (min-width: 992px) and (max-width: 1199px) {
-      .cshub-gallery {
-        gap: 30px;
-        max-width: 75vw;
-      }
-      .gallery-item img {
-        width: 200px;
-        height: 200px;
-      }
-    }
-
-    @media (min-width: 768px) and (max-width: 991px) {
-      .cshub-logo {
-        left: 50%;
-        transform: translateX(-50%);
-        max-width: 90vw;
-      }
-      .cshub-gallery {
-        max-width: 85vw;
-        gap: 22px;
-        padding: 14px 20px;
-      }
-      .gallery-item img {
-        width: 150px;
-        height: 150px;
-      }
-    }
-
-    @media (max-width: 767px) {
-      .cshub-logo {
-        left: 50%;
-        transform: translateX(-50%);
-        width: 92%;
-        max-width: 92vw;
-        top: calc(50% + 120px);
-      }
-      .cshub-gallery {
-        max-width: 88vw;
-        gap: 16px;
-        padding: 12px 18px;
-      }
-      .gallery-item img {
-        width: 120px;
-        height: 120px;
-      }
-      .gallery-item {
-        padding: 5px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .gallery-item img {
-        width: 100px;
-        height: 100px;
-      }
-      .cshub-gallery {
-        gap: 12px;
-      }
-    }
-
-    .gallery-title {
-      font-family: 'Segoe UI', 'Poppins', monospace;
-      font-weight: 700;
-      font-size: 1.6rem;
-      letter-spacing: 2.5px;
-      margin-bottom: 18px;
-      background: linear-gradient(135deg, #00ffaa, #00ccff, #2a6eff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-shadow: 0 0 12px rgba(0, 255, 170, 0.4);
-      display: inline-block;
-      backdrop-filter: blur(2px);
-    }
-
-    @keyframes fadeInUp {
-      0% {
-        opacity: 0;
-        transform: translate(-50%, 40px);
-      }
-      100% {
-        opacity: 1;
-        transform: translate(-50%, 0);
-      }
-    }
-
-    /* ========== MODAL STYLES - KILLER BABY WITH THEME MARGINS ========== */
-    .gallery-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.92);
-      backdrop-filter: blur(12px);
-      z-index: 9999;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .gallery-modal.active {
-      display: flex;
-      opacity: 1;
-    }
-
-    .modal-content {
-      position: relative;
-      max-width: 85vw;
-      max-height: 85vh;
-      margin: auto;
-      border-radius: 32px;
-      overflow: hidden;
-      box-shadow: 0 0 60px rgba(0, 255, 170, 0.6), 0 20px 40px rgba(0,0,0,0.5);
-      animation: modalPop 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-      border: 2px solid rgba(0, 255, 170, 0.7);
-    }
-
-    @keyframes modalPop {
-      0% {
-        transform: scale(0.9);
-        opacity: 0;
-      }
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    .modal-content img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-      background: #0a0f1a;
-    }
-
-    /* Close button with killer style */
-    .modal-close {
-      position: absolute;
-      top: 24px;
-      right: 32px;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(8px);
-      color: #00ffaa;
-      font-size: 2.5rem;
-      font-weight: bold;
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.25s;
-      border: 1.5px solid rgba(0, 255, 170, 0.6);
-      font-family: monospace;
-      z-index: 10001;
-      box-shadow: 0 0 15px rgba(0,255,170,0.3);
-    }
-
-    .modal-close:hover {
-      background: #00ffaa20;
-      transform: scale(1.1);
-      color: #ffffff;
-      border-color: #00ffaa;
-      box-shadow: 0 0 25px #00ffaa;
-    }
-
-    /* Optional image caption / index */
-    .modal-caption {
-      position: absolute;
-      bottom: 20px;
-      left: 0;
-      right: 0;
-      text-align: center;
-      color: #00ffaa;
-      font-family: monospace;
-      font-size: 1rem;
-      background: rgba(0,0,0,0.6);
-      padding: 8px 16px;
-      width: fit-content;
-      margin: 0 auto;
-      border-radius: 40px;
-      backdrop-filter: blur(8px);
-      pointer-events: none;
-      letter-spacing: 1px;
-    }
-
-    /* responsive modal margins */
-    @media (max-width: 768px) {
-      .modal-close {
-        top: 16px;
-        right: 20px;
-        width: 44px;
-        height: 44px;
-        font-size: 2rem;
-      }
-      .modal-content {
-        max-width: 92vw;
-        max-height: 80vh;
-        border-radius: 24px;
-      }
-      .modal-caption {
-        font-size: 0.8rem;
-        bottom: 12px;
-      }
-    }
-
-    /* preserve all existing styles from original untouched parts */
-  </style>
+  <link href="./styles/gallery.css" rel="stylesheet" />
 </head>
 <body>
   <!-- Download Container: absolutely unchanged -->
   <div class="download-container">
     <a href="#" class="download-btn" onclick="trackDownload()">
       <i class="bi bi-download"></i>
-      Update
+      Download
     </a>
     <div id="downloads" class="download-count">Loading...</div>
   </div>
@@ -336,9 +27,9 @@
 
   <!-- CSHub Gallery: horizontal layout + modal on image tap -->
   <div class="cshub-logo">
-    
+
     <div class="cshub-gallery" id="horizontalGallery">
-      <div class="gallery-item" data-img-src="assets/apps.jpg" data-img-alt="CSHub Visual 1">            <img src="assets/apps.jpg" alt="CSHub visual 1" loading="lazy">  
+      <div class="gallery-item" data-img-src="assets/apps.jpg" data-img-alt="CSHub Visual 1">            <img src="assets/apps.jpg" alt="CSHub visual 1" loading="lazy">
       </div>
       <div class="gallery-item" data-img-src="assets/cshubimg.jpg" data-img-alt="CSHub Visual 1">
         <img src="assets/cshubimg.jpg" alt="CSHub visual 1" loading="lazy">
@@ -352,7 +43,7 @@
       <div class="gallery-item" data-img-src="assets/cshubimg4.jpg" data-img-alt="CSHub Visual 4">
         <img src="assets/cshubimg4.jpg" alt="CSHub visual 4" loading="lazy">
       </div>
-     
+
     </div>
   </div>
 
@@ -362,7 +53,7 @@
       <img id="modalImage" src="" alt="Enlarged view">
     </div>
     <div class="modal-close" id="closeModalBtn">&times;</div>
-    <!-- temporally removed captions 
+    <!-- temporally removed captions
 
        <div class="modal-caption" id="modalCaption">CSHub Gallery</div>
 
@@ -383,6 +74,7 @@
     </div>
   </div>
 
+
   <!-- P-AI Modal (fully intact) -->
   <div id="paiModal">
     <p>
@@ -391,149 +83,165 @@
     </p>
     <button id="joinPaiBtn">Join WhatsApp Group</button>
   </div>
-
   <!-- Canvas background animation: untouched -->
   <canvas id="c"></canvas>
 
+
+
+
+  <style>
+    :root {
+        --neon: #00ffaa;
+        --neon-dim: rgba(0, 255, 170, 0.15);
+        --bg-glass: rgba(0, 0, 0, 0.95);
+    }
+
+    /* Floating Toggle Icon */
+    .inquiry-toggle {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        width: 55px;
+        height: 55px;
+        background: var(--neon);
+        color: #000;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 1100;
+        box-shadow: 0 0 20px var(--neon-dim);
+        font-size: 1.6rem;
+        transition: 0.3s;
+    }
+    .inquiry-toggle.hidden { opacity: 0; pointer-events: none; }
+
+    /* Main Overlay - 50% height */
+    .inquiry-overlay {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 50vh;
+        background: var(--bg-glass);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid var(--neon);
+        z-index: 1000;
+        font-family: 'Courier New', monospace;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        transform: translateY(100%);
+    }
+    .inquiry-overlay.open { transform: translateY(0); }
+
+    .log-header {
+        padding: 12px 20px;
+        background: var(--neon-dim);
+        color: var(--neon);
+        font-size: 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Horizontal Comment Feed */
+    .comment-feed {
+        padding: 25px;
+        overflow-x: auto;
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        flex-grow: 1;
+        scrollbar-width: none;
+    }
+    .comment-feed::-webkit-scrollbar { display: none; }
+
+    .comment-entry {
+        min-width: 280px;
+        max-width: 350px;
+        background: rgba(255,255,255,0.03);
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 2px solid var(--neon);
+        display: flex;
+        gap: 12px;
+    }
+
+    .profile-icon {
+        width: 35px;
+        height: 35px;
+        background: var(--neon-dim);
+        border: 1px solid var(--neon);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--neon);
+        flex-shrink: 0;
+    }
+
+    .comment-content { display: flex; flex-direction: column; }
+    .comment-time { color: var(--neon); font-size: 0.6rem; margin-bottom: 4px; opacity: 0.6; }
+    .comment-text { color: #fff; font-size: 0.85rem; margin: 0; white-space: normal; line-height: 1.3; }
+
+    .input-bar {
+        padding: 15px 20px;
+        background: #000;
+        border-top: 1px solid var(--neon-dim);
+        display: flex;
+        gap: 12px;
+    }
+
+    .input-field {
+        flex-grow: 1;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--neon-dim);
+        color: #fff;
+        padding: 12px;
+        font-family: 'Courier New', monospace;
+        outline: none;
+    }
+
+    .send-btn {
+        background: var(--neon);
+        color: #000;
+        border: none;
+        padding: 0 20px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+</style>
+
+<div class="inquiry-toggle" id="floatingBtn" onclick="toggleInquiry()">
+    <i class="bi bi-chat-square-dots"></i>
+</div>
+
+<div class="inquiry-overlay" id="inquiryOverlay">
+    <div class="log-header">
+        <span>Post a Question</span>
+        <span style="font-size: 4em; cursor:pointer; color:#ff4444;" onclick="toggleInquiry()">X</span>
+    </div>
+
+    <div class="comment-feed" id="commentFeed">
+        </div>
+
+    <div class="input-bar">
+        <input type="text" class="input-field" placeholder="Type inquiry..." id="userInquiry">
+        <button class="send-btn" id="sendBtn">SEND</button>
+    </div>
+</div>
+
+
   <!-- Original scripts: script.js & animation.js remain exactly as included -->
+  
   <script src="./scripts/animation.js"></script>
   <script src="./scripts/script.js"></script>
-  
+  <script src="./scripts/gallery.js"></script>
+    
 
   <!-- Modal + Gallery tap handler: killer baby with your theme margins. No other modifications -->
-  <script>
-    (function() {
-      // Grab DOM elements
-      const galleryContainer = document.querySelector('.cshub-gallery');
-      const modal = document.getElementById('imageModal');
-      const modalImg = document.getElementById('modalImage');
-      const closeBtn = document.getElementById('closeModalBtn');
-      const modalCaption = document.getElementById('modalCaption');
-      
-      // Helper to open modal with specific image src and alt text
-      function openModal(imgSrc, imgAlt) {
-        if (!modal || !modalImg) return;
-        modalImg.src = imgSrc;
-        modalImg.alt = imgAlt || 'CSHub Gallery Image';
-        if (modalCaption) {
-          modalCaption.textContent = imgAlt ? `✨ ${imgAlt} ✨` : '🌟 CSHub Gallery 🌟';
-        }
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden'; // prevent scroll behind modal
-      }
-      
-      function closeModal() {
-        if (modal) {
-          modal.classList.remove('active');
-          document.body.style.overflow = '';
-          // optional: reset image src after transition to avoid flicker
-          setTimeout(() => {
-            if (!modal.classList.contains('active') && modalImg) {
-              // keep but fine
-            }
-          }, 200);
-        }
-      }
-      
-      // Attach click/tap listeners to each gallery item (images themselves or item wrapper)
-      if (galleryContainer) {
-        // Use event delegation for better performance & dynamic if needed
-        galleryContainer.addEventListener('click', (e) => {
-          // Find the actual image element or the gallery-item container
-          let targetImg = e.target.closest('img');
-          if (targetImg && targetImg.closest('.gallery-item')) {
-            e.stopPropagation();
-            const galleryItem = targetImg.closest('.gallery-item');
-            // get high-res image source (data attribute or the src itself)
-            let highResSrc = galleryItem.getAttribute('data-img-src');
-            if (!highResSrc) {
-              highResSrc = targetImg.getAttribute('src');
-            }
-            const altText = targetImg.getAttribute('alt') || galleryItem.getAttribute('data-img-alt') || 'CSHub Image';
-            if (highResSrc) {
-              openModal(highResSrc, altText);
-            } else {
-              openModal(targetImg.src, altText);
-            }
-          }
-        });
-      }
-      
-      // Close modal when clicking on the overlay background (modal itself)
-      if (modal) {
-        modal.addEventListener('click', (e) => {
-          // if click is directly on modal background (not on modal-content or close btn)
-          if (e.target === modal) {
-            closeModal();
-          }
-        });
-      }
-      
-      // Close button click
-      if (closeBtn) {
-        closeBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          closeModal();
-        });
-      }
-      
-      // Keyboard support: ESC closes modal
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
-          closeModal();
-        }
-      });
-      
-      // Optional: also allow horizontal drag-to-scroll without interfering with modal
-      const gallery = document.querySelector('.cshub-gallery');
-      if (gallery) {
-        let isDown = false;
-        let startX;
-        let scrollLeft;
-        
-        gallery.addEventListener('mousedown', (e) => {
-          // avoid conflict if clicking on image: we only start drag if not on img? but fine
-          if (e.target.closest('img')) return; // if user intends to tap, dragging not initiated on img mousedown? still acceptable.
-          isDown = true;
-          gallery.style.cursor = 'grabbing';
-          startX = e.pageX - gallery.offsetLeft;
-          scrollLeft = gallery.scrollLeft;
-        });
-        
-        gallery.addEventListener('mouseleave', () => {
-          isDown = false;
-          gallery.style.cursor = 'grab';
-        });
-        
-        gallery.addEventListener('mouseup', () => {
-          isDown = false;
-          gallery.style.cursor = 'grab';
-        });
-        
-        gallery.addEventListener('mousemove', (e) => {
-          if (!isDown) return;
-          e.preventDefault();
-          const x = e.pageX - gallery.offsetLeft;
-          const walk = (x - startX) * 1.2;
-          gallery.scrollLeft = scrollLeft - walk;
-        });
-        
-        gallery.addEventListener('wheel', (e) => {
-          if (e.target.closest('.cshub-gallery')) {
-            e.preventDefault();
-            gallery.scrollLeft += e.deltaY;
-          }
-        }, { passive: false });
-        
-        gallery.style.cursor = 'grab';
-      }
-      
-      // Prevent modal content click from closing (propagation already handled)
-      const modalContentDiv = document.querySelector('.modal-content');
-      if (modalContentDiv) {
-        modalContentDiv.addEventListener('click', (e) => e.stopPropagation());
-      }
-    })();
-  </script>
+
 </body>
 </html>
