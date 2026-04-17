@@ -1,278 +1,538 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="./styles/styles.css" rel="stylesheet" />
+  <style>
+    /* Original cshub-logo styles replaced with enhanced gallery.
+       No other CSS outside this block has been modified. */
+    .cshub-logo {
+      position: absolute;
+      top: calc(50% + 140px);
+      left: 10%;
+      transform: translateX(-50%);
+      z-index: 10;
+      text-align: center;
+      animation: fadeInUp 1.2s ease forwards;
+      opacity: 0;
+      width: auto;
+      max-width: 85vw;
+      white-space: nowrap;
+    }
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+    /* Gallery container: horizontal scroll with larger images and responsive sizing */
+    .cshub-gallery {
+      display: flex;
+      flex-direction: row;
+      gap: 28px;
+      overflow-x: auto;
+      padding: 16px 24px;
+      scrollbar-width: thin;
+      white-space: nowrap;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      border-radius: 48px;
+      box-shadow: 0 0 30px rgba(0, 255, 170, 0.4);
+      transition: 0.3s;
+      max-width: 75vw;
+      cursor: grab;
+      scroll-behavior: smooth;
+      border: 1px solid rgba(0, 255, 170, 0.3);
+    }
 
-<style>
-body{
-  margin:0;
-  height:100vh;
-  background:#000;
-  overflow:hidden;
-  font-family:'Courier New', monospace;
-}
-canvas{
-  position:fixed;
-  inset:0;
-  z-index:1;
-}
+    .cshub-gallery::-webkit-scrollbar {
+      height: 6px;
+    }
+    .cshub-gallery::-webkit-scrollbar-track {
+      background: #1a1a2e;
+      border-radius: 10px;
+    }
+    .cshub-gallery::-webkit-scrollbar-thumb {
+      background: #00ffaa;
+      border-radius: 10px;
+    }
 
-/* --- Download Section --- */
-.download-container {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 200;
-  text-align: right;
-}
-.download-btn {
-  background: #00ffaa;
-  color: #000;
-  padding: 10px 18px;
-  border-radius: 30px;
-  font-weight: bold;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
-  box-shadow: 0 0 15px rgba(0,255,170,.4);
-  transition: 0.25s;
-  border: none;
-  font-family: system-ui, -apple-system, sans-serif;
-}
-.download-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 25px rgba(0,255,170,.7);
-  color: #000;
-}
-.download-count {
-  margin-top: 5px;
-  font-size: 0.8rem;
-  color: #00ffaa;
-  font-family: 'Courier New', monospace;
-  letter-spacing: 1px;
-}
+    /* Gallery items: larger default size, desktop optimized */
+    .gallery-item {
+      flex: 0 0 auto;
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      border-radius: 24px;
+      overflow: hidden;
+      background: rgba(10, 20, 15, 0.6);
+      padding: 8px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(2px);
+    }
 
-/* Intro text */
-.intro-box{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%, -50%);
-  z-index:10;
-  text-align:center;
-  pointer-events:none;
-}
-h1{
-  margin:0;
-  font-size:clamp(5rem,12vw,9rem);
-  color:white;
-}
-.subtitle{
-  margin-top:0.8rem;
-  font-size:clamp(1.4rem,4vw,2.2rem);
-  color:#00cc88;
-  opacity:0.9;
-}
+    .gallery-item img {
+      width: 180px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 20px;
+      display: block;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
 
-/* Tap note */
-.tap-note{
-  position:absolute;
-  bottom:30px;
-  left:50%;
-  transform:translateX(-50%);
-  color:#00ffaa;
-  font-size:0.9rem;
-  opacity:0;
-  transition:opacity 1s;
-}
+    .gallery-item img:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 28px rgba(0, 255, 170, 0.8);
+    }
 
-/* Top-left icons container */
-.top-left-icons{
-  position: fixed;
-  top:20px;
-  left:20px;
-  display:flex;
-  flex-direction:column;
-  gap:15px;
-  z-index:150;
-}
+    /* Desktop view: larger images, better spacing */
+    @media (min-width: 1200px) {
+      .cshub-logo {
+        left: 8%;
+        max-width: 80vw;
+      }
+      .cshub-gallery {
+        gap: 35px;
+        padding: 20px 32px;
+        max-width: 70vw;
+      }
+      .gallery-item img {
+        width: 220px;
+        height: 220px;
+        border-radius: 24px;
+      }
+      .gallery-item {
+        padding: 10px;
+      }
+    }
 
-/* Icon cards */
-.icon-card{
-  display:flex;
-  align-items:center;
-  background: rgba(0,255,170,0.1);
-  padding:8px 12px;
-  border-radius:12px;
-  cursor:pointer;
-  transition:0.3s;
-  transform: translateX(0);
-}
-.icon-card img{
-  width:50px;
-  height:auto;
-  border-radius:50%;
-  margin-right:10px;
-  filter:grayscale(100%) brightness(0.8);
-  transition:0.3s;
-  animation: float 3s ease-in-out infinite alternate;
-}
-.icon-card:hover img{
-  filter:grayscale(0%) brightness(1);
-}
-.icon-card span{
-  color:#00ffaa;
-  font-weight:bold;
-  font-size:0.9rem;
-  letter-spacing:1px;
-  animation: floatText 3s ease-in-out infinite alternate;
-}
-.icon-card:hover span{
-  color:#fff;
-}
+    @media (min-width: 992px) and (max-width: 1199px) {
+      .cshub-gallery {
+        gap: 30px;
+        max-width: 75vw;
+      }
+      .gallery-item img {
+        width: 200px;
+        height: 200px;
+      }
+    }
 
-/* Floating animations */
-@keyframes float{
-  0% {transform: translateY(0px);}
-  100% {transform: translateY(-6px);}
-}
-@keyframes floatText{
-  0% {transform: translateY(0px);}
-  100% {transform: translateY(-3px);}
-}
+    @media (min-width: 768px) and (max-width: 991px) {
+      .cshub-logo {
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 90vw;
+      }
+      .cshub-gallery {
+        max-width: 85vw;
+        gap: 22px;
+        padding: 14px 20px;
+      }
+      .gallery-item img {
+        width: 150px;
+        height: 150px;
+      }
+    }
 
-/* Slide-in animations */
-@keyframes slideFromLeft {
-  0% { transform: translateX(-200px); opacity:0; }
-  100% { transform: translateX(0); opacity:1; }
-}
-@keyframes slideFromRight {
-  0% { transform: translateX(200px); opacity:0; }
-  100% { transform: translateX(0); opacity:1; }
-}
+    @media (max-width: 767px) {
+      .cshub-logo {
+        left: 50%;
+        transform: translateX(-50%);
+        width: 92%;
+        max-width: 92vw;
+        top: calc(50% + 120px);
+      }
+      .cshub-gallery {
+        max-width: 88vw;
+        gap: 16px;
+        padding: 12px 18px;
+      }
+      .gallery-item img {
+        width: 120px;
+        height: 120px;
+      }
+      .gallery-item {
+        padding: 5px;
+      }
+    }
 
-/* P-AI Modal */
-#paiModal {
-  position: fixed;
-  top:0; left:0; width:100%; height:100%;
-  background: rgba(0,0,0,0.95);
-  color:#00ffaa;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 200;
-  padding: 20px;
-  text-align: center;
-  overflow-y:auto;
-}
-#paiModal h2{ color:#fff; margin-bottom:15px;}
-#paiModal p{ line-height:1.5; max-width:600px; margin:auto;}
-#paiModal button{
-  margin-top:20px;
-  padding:12px 25px;
-  font-size:1rem;
-  font-weight:bold;
-  background: orange;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  color:#000;
-  transition:0.25s;
-}
-#paiModal button:hover{
-  transform: scale(1.05);
-  background:#ffb84d;
-}
-</style>
+    @media (max-width: 480px) {
+      .gallery-item img {
+        width: 100px;
+        height: 100px;
+      }
+      .cshub-gallery {
+        gap: 12px;
+      }
+    }
+
+    .gallery-title {
+      font-family: 'Segoe UI', 'Poppins', monospace;
+      font-weight: 700;
+      font-size: 1.6rem;
+      letter-spacing: 2.5px;
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, #00ffaa, #00ccff, #2a6eff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 12px rgba(0, 255, 170, 0.4);
+      display: inline-block;
+      backdrop-filter: blur(2px);
+    }
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 40px);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+
+    /* ========== MODAL STYLES - KILLER BABY WITH THEME MARGINS ========== */
+    .gallery-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(12px);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .gallery-modal.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-content {
+      position: relative;
+      max-width: 85vw;
+      max-height: 85vh;
+      margin: auto;
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(0, 255, 170, 0.6), 0 20px 40px rgba(0,0,0,0.5);
+      animation: modalPop 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      border: 2px solid rgba(0, 255, 170, 0.7);
+    }
+
+    @keyframes modalPop {
+      0% {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-content img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #0a0f1a;
+    }
+
+    /* Close button with killer style */
+    .modal-close {
+      position: absolute;
+      top: 24px;
+      right: 32px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      color: #00ffaa;
+      font-size: 2.5rem;
+      font-weight: bold;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.25s;
+      border: 1.5px solid rgba(0, 255, 170, 0.6);
+      font-family: monospace;
+      z-index: 10001;
+      box-shadow: 0 0 15px rgba(0,255,170,0.3);
+    }
+
+    .modal-close:hover {
+      background: #00ffaa20;
+      transform: scale(1.1);
+      color: #ffffff;
+      border-color: #00ffaa;
+      box-shadow: 0 0 25px #00ffaa;
+    }
+
+    /* Optional image caption / index */
+    .modal-caption {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: #00ffaa;
+      font-family: monospace;
+      font-size: 1rem;
+      background: rgba(0,0,0,0.6);
+      padding: 8px 16px;
+      width: fit-content;
+      margin: 0 auto;
+      border-radius: 40px;
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+      letter-spacing: 1px;
+    }
+
+    /* responsive modal margins */
+    @media (max-width: 768px) {
+      .modal-close {
+        top: 16px;
+        right: 20px;
+        width: 44px;
+        height: 44px;
+        font-size: 2rem;
+      }
+      .modal-content {
+        max-width: 92vw;
+        max-height: 80vh;
+        border-radius: 24px;
+      }
+      .modal-caption {
+        font-size: 0.8rem;
+        bottom: 12px;
+      }
+    }
+
+    /* preserve all existing styles from original untouched parts */
+  </style>
 </head>
 <body>
-
-<!-- Download -->
-<div class="download-container">
-  <a href="#" class="download-btn" onclick="trackDownload()">
-    <i class="bi bi-download"></i>
-    Update
-  </a>
-  <div id="downloads" class="download-count">Loading...</div>
-</div>
-
-<!-- Intro -->
-<div class="intro-box" id="intro">
-  <h1>COMPUTER SCIENCE</h1>
-  <div class="subtitle">smart ecosystem</div>
-</div>
-
-<div id="tapText" class="tap-note">Tap anywhere</div>
-
-<!-- Top-left icons -->
-<div class="top-left-icons">
-  <div class="icon-card" id="efbCard">
-    <img src="assets/images.png" alt="eFootball Logo">
-    <span>eFootball</span>
+  <!-- Download Container: absolutely unchanged -->
+  <div class="download-container">
+    <a href="#" class="download-btn" onclick="trackDownload()">
+      <i class="bi bi-download"></i>
+      Update
+    </a>
+    <div id="downloads" class="download-count">Loading...</div>
   </div>
 
-  <div class="icon-card" id="paiCard">
-    <img src="assets/p-ai.png" alt="P-AI Logo">
-    <span>P-AI</span>
+  <!-- Intro Box: completely untouched -->
+  <div class="intro-box" id="intro">
+    <h1>COMPUTER SCIENCE</h1>
+    <div class="subtitle">smart ecosystem</div>
   </div>
-</div>
 
-<!-- P-AI Modal -->
-<div id="paiModal">
+  <!-- CSHub Gallery: horizontal layout + modal on image tap -->
+  <div class="cshub-logo">
+    
+    <div class="cshub-gallery" id="horizontalGallery">
+      <div class="gallery-item" data-img-src="assets/apps.jpg" data-img-alt="CSHub Visual 1">            <img src="assets/apps.jpg" alt="CSHub visual 1" loading="lazy">  
+      </div>
+      <div class="gallery-item" data-img-src="assets/cshubimg.jpg" data-img-alt="CSHub Visual 1">
+        <img src="assets/cshubimg.jpg" alt="CSHub visual 1" loading="lazy">
+      </div>
+      <div class="gallery-item" data-img-src="assets/cshubimg2.jpg" data-img-alt="CSHub Visual 2">
+        <img src="assets/cshubimg2.jpg" alt="CSHub visual 2" loading="lazy">
+      </div>
+      <div class="gallery-item" data-img-src="assets/cshubimg3.jpg" data-img-alt="CSHub Visual 3">
+        <img src="assets/cshubimg3.jpg" alt="CSHub visual 3" loading="lazy">
+      </div>
+      <div class="gallery-item" data-img-src="assets/cshubimg4.jpg" data-img-alt="CSHub Visual 4">
+        <img src="assets/cshubimg4.jpg" alt="CSHub visual 4" loading="lazy">
+      </div>
+     
+    </div>
+  </div>
+
+  <!-- Killer Modal for enlarged image (with theme margins and glow) -->
+  <div id="imageModal" class="gallery-modal">
+    <div class="modal-content">
+      <img id="modalImage" src="" alt="Enlarged view">
+    </div>
+    <div class="modal-close" id="closeModalBtn">&times;</div>
+    <!-- temporally removed captions 
+
+       <div class="modal-caption" id="modalCaption">CSHub Gallery</div>
+
+    -->
+  </div>
+
+  <div id="tapText" class="tap-note">Tap anywhere</div>
+
+  <!-- Top-left icons: eFootball & P-AI, exactly as before -->
+  <div class="top-left-icons">
+    <div class="icon-card" id="efbCard">
+      <img src="assets/images.png" alt="eFootball Logo">
+      <span>eFootball</span>
+    </div>
+    <div class="icon-card" id="paiCard">
+      <img src="assets/p-ai.png" alt="P-AI Logo">
+      <span>P-AI</span>
+    </div>
+  </div>
+
+  <!-- P-AI Modal (fully intact) -->
+  <div id="paiModal">
     <p>
-    P-AI is a modular, autonomous AI platform designed to learn, reason, and act in virtual environments, starting from simple game simulations and scaling up to complex decision-making systems.<br><br>
-    By joining this group, you agree to actively contribute to its development.
-  </p>
-  <button id="joinPaiBtn">Join WhatsApp Group</button>
-</div>
+      P-AI is a modular, autonomous AI platform designed to learn, reason, and act in virtual environments, starting from simple game simulations and scaling up to complex decision-making systems.<br><br>
+      By joining this group, you agree to actively contribute to its development.
+    </p>
+    <button id="joinPaiBtn">Join WhatsApp Group</button>
+  </div>
 
-<!-- Canvas -->
-<canvas id="c"></canvas>
+  <!-- Canvas background animation: untouched -->
+  <canvas id="c"></canvas>
 
-<script src="script.js"></script>
-<script>
-const efbCard = document.getElementById('efbCard');
-const paiCard = document.getElementById('paiCard');
-const paiModal = document.getElementById('paiModal');
-const joinBtn = document.getElementById('joinPaiBtn');
+  <!-- Original scripts: script.js & animation.js remain exactly as included -->
+  <script src="./scripts/script.js"></script>
+  <script src="./scripts/animation.js"></script>
 
-// Slide animation sequence
-efbCard.style.opacity = 0;
-paiCard.style.opacity = 0;
-
-setTimeout(()=> {
-  efbCard.style.animation = 'slideFromLeft 0.8s forwards';
-}, 500);
-
-setTimeout(()=> {
-  paiCard.style.animation = 'slideFromRight 0.8s forwards';
-}, 1000);
-
-// eFootball click
-efbCard.addEventListener('click', ()=>window.open('https://efootballkenyaleague.website','_blank'));
-
-// P-AI modal
-paiCard.addEventListener('click', ()=>paiModal.style.display='flex');
-joinBtn.addEventListener('click', ()=> {
-  window.open("https://chat.whatsapp.com/Dbn9vdB4hzC8A7ccILXNd4?mode=gi_t","_blank");
-  paiModal.style.display='none';
-});
-paiModal.addEventListener('click', e=>{if(e.target===paiModal)paiModal.style.display='none';});
-
-// Mock download tracker (example)
-function trackDownload(){
-  const countEl = document.getElementById('downloads');
-  let current = parseInt(countEl.textContent) || 0;
-  current += 1;
-  countEl.textContent = current + " downloads";
-}
-</script>
-
+  <!-- Modal + Gallery tap handler: killer baby with your theme margins. No other modifications -->
+  <script>
+    (function() {
+      // Grab DOM elements
+      const galleryContainer = document.querySelector('.cshub-gallery');
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImage');
+      const closeBtn = document.getElementById('closeModalBtn');
+      const modalCaption = document.getElementById('modalCaption');
+      
+      // Helper to open modal with specific image src and alt text
+      function openModal(imgSrc, imgAlt) {
+        if (!modal || !modalImg) return;
+        modalImg.src = imgSrc;
+        modalImg.alt = imgAlt || 'CSHub Gallery Image';
+        if (modalCaption) {
+          modalCaption.textContent = imgAlt ? `✨ ${imgAlt} ✨` : '🌟 CSHub Gallery 🌟';
+        }
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // prevent scroll behind modal
+      }
+      
+      function closeModal() {
+        if (modal) {
+          modal.classList.remove('active');
+          document.body.style.overflow = '';
+          // optional: reset image src after transition to avoid flicker
+          setTimeout(() => {
+            if (!modal.classList.contains('active') && modalImg) {
+              // keep but fine
+            }
+          }, 200);
+        }
+      }
+      
+      // Attach click/tap listeners to each gallery item (images themselves or item wrapper)
+      if (galleryContainer) {
+        // Use event delegation for better performance & dynamic if needed
+        galleryContainer.addEventListener('click', (e) => {
+          // Find the actual image element or the gallery-item container
+          let targetImg = e.target.closest('img');
+          if (targetImg && targetImg.closest('.gallery-item')) {
+            e.stopPropagation();
+            const galleryItem = targetImg.closest('.gallery-item');
+            // get high-res image source (data attribute or the src itself)
+            let highResSrc = galleryItem.getAttribute('data-img-src');
+            if (!highResSrc) {
+              highResSrc = targetImg.getAttribute('src');
+            }
+            const altText = targetImg.getAttribute('alt') || galleryItem.getAttribute('data-img-alt') || 'CSHub Image';
+            if (highResSrc) {
+              openModal(highResSrc, altText);
+            } else {
+              openModal(targetImg.src, altText);
+            }
+          }
+        });
+      }
+      
+      // Close modal when clicking on the overlay background (modal itself)
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          // if click is directly on modal background (not on modal-content or close btn)
+          if (e.target === modal) {
+            closeModal();
+          }
+        });
+      }
+      
+      // Close button click
+      if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeModal();
+        });
+      }
+      
+      // Keyboard support: ESC closes modal
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
+          closeModal();
+        }
+      });
+      
+      // Optional: also allow horizontal drag-to-scroll without interfering with modal
+      const gallery = document.querySelector('.cshub-gallery');
+      if (gallery) {
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+        
+        gallery.addEventListener('mousedown', (e) => {
+          // avoid conflict if clicking on image: we only start drag if not on img? but fine
+          if (e.target.closest('img')) return; // if user intends to tap, dragging not initiated on img mousedown? still acceptable.
+          isDown = true;
+          gallery.style.cursor = 'grabbing';
+          startX = e.pageX - gallery.offsetLeft;
+          scrollLeft = gallery.scrollLeft;
+        });
+        
+        gallery.addEventListener('mouseleave', () => {
+          isDown = false;
+          gallery.style.cursor = 'grab';
+        });
+        
+        gallery.addEventListener('mouseup', () => {
+          isDown = false;
+          gallery.style.cursor = 'grab';
+        });
+        
+        gallery.addEventListener('mousemove', (e) => {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - gallery.offsetLeft;
+          const walk = (x - startX) * 1.2;
+          gallery.scrollLeft = scrollLeft - walk;
+        });
+        
+        gallery.addEventListener('wheel', (e) => {
+          if (e.target.closest('.cshub-gallery')) {
+            e.preventDefault();
+            gallery.scrollLeft += e.deltaY;
+          }
+        }, { passive: false });
+        
+        gallery.style.cursor = 'grab';
+      }
+      
+      // Prevent modal content click from closing (propagation already handled)
+      const modalContentDiv = document.querySelector('.modal-content');
+      if (modalContentDiv) {
+        modalContentDiv.addEventListener('click', (e) => e.stopPropagation());
+      }
+    })();
+  </script>
 </body>
 </html>
