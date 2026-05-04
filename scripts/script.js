@@ -202,60 +202,162 @@ canvas.addEventListener("touchstart",(e)=>{
   ripples.push(new Ripple(t.clientX,t.clientY));
 });
 
+let currentReplyTo = null;
 
-    function toggleInquiry() {
-        const overlay = document.getElementById('inquiryOverlay');
-        const btn = document.getElementById('floatingBtn');
-        overlay.classList.toggle('open');
-        btn.classList.toggle('hidden');
-        if(overlay.classList.contains('open')) fetchComments();
+// Toggle overlay
+function toggleInquiry() {
+    const overlay = document.getElementById('inquiryOverlay');
+    const btn = document.getElementById('floatingBtn');
+    overlay.classList.toggle('open');
+    btn.classList.toggle('hidden');
+    
+    if (overlay.classList.contains('open')) {
+        fetchComments();
+    } else {
+        resetReplyMode();
     }
+}
 
-    // Fetch comments from Supabase
-    async function fetchComments() {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/user_inquiries?select=*&order=created_at.desc`, {
-            headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
-        });
-        const data = await response.json();
-        const feed = document.getElementById('commentFeed');
-        feed.innerHTML = '';
-
-        data.forEach(item => {
-            const time = new Date(item.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            feed.innerHTML += `
-                <div class="comment-entry">
-                    <div class="profile-icon"><i class="bi bi-person-fill"></i></div>
-                    <div class="comment-content">
-                        <span class="comment-time">${time}</span>
-                        <p class="comment-text">${item.message}</p>
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-    // Post comment to Supabase
-    document.getElementById('sendBtn').onclick = async () => {
-        const input = document.getElementById('userInquiry');
-        const msg = input.value.trim();
-        if (!msg) return;
-
-        const btn = document.getElementById('sendBtn');
-        btn.disabled = true;
-
-        await fetch(`${SUPABASE_URL}/rest/v1/user_inquiries`, {
-            method: 'POST',
+// Fetch and display comments with 1-level replies
+async function fetchComments() {
+    const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/user_inquiries?select=*&order=created_at.asc`,
+        {
             headers: {
                 "apikey": SUPABASE_KEY,
-                "Authorization": `Bearer ${SUPABASE_KEY}`,
-                "Content-Type": "application/json",
-                "Prefer": "return=representation"
-            },
-            body: JSON.stringify({ message: msg })
+                "Authorization": `Bearer ${SUPABASE_KEY}`
+            }
+        }
+    );
+
+    const data = await response.json();
+    const feed = document.getElementById('commentFeed');
+    feed.innerHTML = '';
+
+    const commentsMap = {};
+    const topLevel = [];
+
+    data.forEach(item => {
+        commentsMap[item.id] = { ...item, replies: [] };
+    });
+
+    data.forEach(item => {
+        if (item.parent_id && commentsMap[item.parent_id]) {
+            commentsMap[item.parent_id].replies.push(commentsMap[item.id]);
+        } else {
+            topLevel.push(commentsMap[item.id]);
+        }
+    });
+
+    // Render only top level + their direct replies
+    topLevel.forEach(comment => {
+        feed.appendChild(createCommentElement(comment));
+    });
+}
+
+
+function createCommentElement(comment) {
+    const div = document.createElement('div');
+    div.className = 'comment-entry';
+
+    const time = new Date(comment.created_at).toLocaleTimeString([], {
+        hour: '2-digit', minute: '2-digit'
+    });
+
+    // Main comment HTML with profile icon
+    div.innerHTML = `
+        <div class="profile-icon"><i class="bi bi-person-fill"></i></div>
+        <div class="comment-content">
+            <span class="comment-time">${time}</span>
+            <p class="comment-text">${escapeHtml(comment.message)}</p>
+            <button class="reply-btn" data-id="${comment.id}">↩ Reply</button>
+            <div class="replies-container" id="replies-${comment.id}"></div>
+        </div>
+    `;
+
+    // Add replies inside the replies container (no profile icons)
+    if (comment.replies && comment.replies.length > 0) {
+        const repliesContainer = div.querySelector(`#replies-${comment.id}`);
+
+        comment.replies.forEach(reply => {
+            const replyDiv = document.createElement('div');
+            replyDiv.className = 'reply-entry';
+
+            const replyTime = new Date(reply.created_at).toLocaleTimeString([], {
+                hour: '2-digit', minute: '2-digit'
+            });
+
+            replyDiv.innerHTML = `
+                <div class="reply-content">
+                    <div class="reply-time">${replyTime}</div>
+                    <p class="reply-text">${escapeHtml(reply.message)}</p>
+                </div>
+            `;
+            repliesContainer.appendChild(replyDiv);
         });
+    }
 
-        input.value = '';
-        btn.disabled = false;
-        fetchComments(); // Refresh list
-    };
+    // Reply button functionality
+    div.querySelector('.reply-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentReplyTo = comment.id;
+        const input = document.getElementById('userInquiry');
+        input.placeholder = `↳ Replying to: "${comment.message.substring(0, 40)}..."`;
+        input.focus();
 
+        // Optional: visual feedback on which comment is being replied to
+        document.querySelectorAll('.comment-entry').forEach(c => {
+            c.style.borderLeftColor = 'var(--neon-dim)';
+        });
+        div.style.borderLeftColor = 'var(--neon)';
+        div.style.background = 'rgba(0, 255, 170, 0.05)';
+    });
+
+    return div;
+}
+
+// Send message
+document.getElementById('sendBtn').onclick = async () => {
+    const input = document.getElementById('userInquiry');
+    const message = input.value.trim();
+    if (!message) return;
+
+    const btn = document.getElementById('sendBtn');
+    btn.disabled = true;
+
+    const payload = { message: message };
+    if (currentReplyTo) {
+        payload.parent_id = currentReplyTo;
+    }
+
+    await fetch(`${SUPABASE_URL}/rest/v1/user_inquiries`, {
+        method: 'POST',
+        headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${SUPABASE_KEY}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=representation"
+        },
+        body: JSON.stringify(payload)
+    });
+
+    input.value = '';
+    btn.disabled = false;
+    
+    resetReplyMode();
+    await fetchComments();
+};
+
+function resetReplyMode() {
+    currentReplyTo = null;
+    document.getElementById('userInquiry').placeholder = "Type inquiry...";
+}
+
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}

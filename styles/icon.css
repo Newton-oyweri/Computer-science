@@ -1,0 +1,214 @@
+:root {
+    --neon: #00ffaa;
+    --neon-dim: rgba(0, 255, 170, 0.15);
+    --bg-glass: rgba(0, 0, 0, 0.95);
+}
+
+/* Floating Toggle Icon */
+.inquiry-toggle {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 55px;
+    height: 55px;
+    background: var(--neon);
+    color: #000;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 1100;
+    box-shadow: 0 0 20px var(--neon-dim);
+    font-size: 1.6rem;
+    transition: 0.3s;
+}
+.inquiry-toggle.hidden { opacity: 0; pointer-events: none; }
+
+/* Main Overlay - 50% height */
+.inquiry-overlay {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50vh;
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--neon);
+    z-index: 1000;
+    font-family: 'Courier New', monospace;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    transform: translateY(100%);
+}
+.inquiry-overlay.open { transform: translateY(0); }
+
+.log-header {
+    padding: 12px 20px;
+    background: var(--neon-dim);
+    color: var(--neon);
+    font-size: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Horizontal Comment Feed */
+.comment-feed {
+    padding: 25px;
+    overflow-x: auto;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    flex-grow: 1;
+    scrollbar-width: none;
+    align-items: flex-start;
+}
+.comment-feed::-webkit-scrollbar { display: none; }
+
+/* Main comment container - independent card */
+.comment-entry {
+    min-width: 280px;
+    max-width: 350px;
+    background: rgba(255,255,255,0.03);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 2px solid var(--neon);
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+    /* Prevent overlapping */
+    position: relative;
+    break-inside: avoid;
+}
+
+.profile-icon {
+    width: 35px;
+    height: 35px;
+    background: var(--neon-dim);
+    border: 1px solid var(--neon);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--neon);
+    flex-shrink: 0;
+}
+
+.comment-content { 
+    display: flex; 
+    flex-direction: column; 
+    flex: 1;
+    min-width: 0; /* Prevents overflow */
+}
+
+.comment-time { 
+    color: var(--neon); 
+    font-size: 0.6rem; 
+    margin-bottom: 4px; 
+    opacity: 0.6; 
+}
+
+.comment-text { 
+    color: #fff; 
+    font-size: 0.85rem; 
+    margin: 0 0 8px 0; 
+    white-space: normal; 
+    line-height: 1.3;
+    word-wrap: break-word;
+}
+
+/* Reply button styling */
+.reply-btn {
+    color: var(--neon);
+    background: none;
+    border: none;
+    font-size: 0.7rem;
+    cursor: pointer;
+    padding: 4px 0;
+    text-align: left;
+    width: fit-content;
+    opacity: 0.7;
+    transition: 0.2s;
+}
+
+.reply-btn:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+/* Replies container - nested inside the same card */
+.replies-container {
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid var(--neon-dim);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Individual reply - no profile icon */
+.reply-entry {
+    display: flex;
+    gap: 0;
+    padding: 8px 0 8px 12px;
+    border-left: 2px solid var(--neon-dim);
+}
+
+.reply-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.reply-time {
+    color: var(--neon);
+    font-size: 0.55rem;
+    opacity: 0.5;
+    margin-bottom: 2px;
+}
+
+.reply-text {
+    color: #ddd;
+    font-size: 0.8rem;
+    margin: 0;
+    line-height: 1.3;
+    word-wrap: break-word;
+}
+
+.input-bar {
+    padding: 15px 20px;
+    background: #000;
+    border-top: 1px solid var(--neon-dim);
+    display: flex;
+    gap: 12px;
+}
+
+.input-field {
+    flex-grow: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--neon-dim);
+    color: #fff;
+    padding: 12px;
+    font-family: 'Courier New', monospace;
+    outline: none;
+}
+
+.send-btn {
+    background: var(--neon);
+    color: #000;
+    border: none;
+    padding: 0 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.send-btn:hover {
+    opacity: 0.8;
+}
+
+.send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
